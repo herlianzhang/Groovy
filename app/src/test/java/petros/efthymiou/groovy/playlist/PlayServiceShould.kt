@@ -1,10 +1,10 @@
 package petros.efthymiou.groovy.playlist
 
+import com.google.common.truth.Truth.assertThat
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
@@ -13,11 +13,11 @@ import petros.efthymiou.groovy.utils.BaseUnitTest
 class PlayServiceShould : BaseUnitTest() {
 
     private lateinit var service: PlaylistService
-    private val playlists = mock<List<Playlist>>()
-    private val api = mock<PlaylistAPI>()
+    private val playlists: List<PlaylistRaw> = mock()
+    private val api: PlaylistAPI = mock()
 
     @Test
-    fun getPlaylistsFromAPI() = runBlockingTest {
+    fun `get playlists from API`() = runBlockingTest {
         service = PlaylistService(api)
 
         service.fetchPlaylists().first()
@@ -26,20 +26,19 @@ class PlayServiceShould : BaseUnitTest() {
     }
 
     @Test
-    fun convertValuesToFlowResultAndEmitsThem() = runBlockingTest {
+    fun `convert values to flow result and emits them`() = runBlockingTest {
         mockSuccessfulCase()
 
-        assertEquals(Result.success(playlists), service.fetchPlaylists().first())
+        assertThat(service.fetchPlaylists().first()).isEqualTo(Result.success(playlists))
     }
 
     @Test
-    fun emitsErrorResultWhenNetworkFails() = runBlockingTest {
+    fun `emits error result when network fails`() = runBlockingTest {
         mockErrorCase()
 
-        assertEquals(
-            "Something went wrong",
+        assertThat(
             service.fetchPlaylists().first().exceptionOrNull()?.message
-        )
+        ).isEqualTo("Something went wrong")
     }
 
     private fun mockErrorCase() = runBlockingTest {
@@ -53,5 +52,4 @@ class PlayServiceShould : BaseUnitTest() {
 
         service = PlaylistService(api)
     }
-
 }

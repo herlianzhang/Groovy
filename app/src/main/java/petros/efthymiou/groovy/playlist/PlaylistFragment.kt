@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import petros.efthymiou.groovy.databinding.FragmentItemListBinding
@@ -43,13 +44,10 @@ class PlaylistFragment : Fragment() {
         binding.playlistsList.apply {
             layoutManager = LinearLayoutManager(context)
 
-            adapter = MyPlaylistRecyclerViewAdapter(playlists)
+            adapter = MyPlaylistRecyclerViewAdapter(playlists) { id ->
+                val action = PlaylistFragmentDirections.actionPlaylistFragmentToPlaylistDetailFragment(id)
+                findNavController().navigate(action)
+            }
         }
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() =
-            PlaylistFragment()
     }
 }
